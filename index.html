@@ -9,22 +9,40 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <!-- Plotly -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-blue-100 font-sans">
     <section class="max-w-7xl mx-auto p-4 sm:p-6">
 
         <!-- Header -->
-        <header class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">
-                Income & Expense Tracker
-            </h1>
-            <p class="text-base sm:text-lg text-gray-600 mt-3">
-                Unified overview of income, expenses & balance
-            </p>
+        <header class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+            <!-- Title Row -->
+            <div class="flex items-center justify-center gap-3">
+                <!-- Logo -->
+                <div class="flex items-center justify-center h-11 w-11 rounded-lg  bg-cyan-400">
+                    <img src="./img/title.svg" alt="Logo" class="h-6 w-6" />
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 ">
+                    Income & Expense Tracker
+                </h1>
+            </div>
+
+            <!-- Subtitle -->
+            <h3 class="mt-3 text-center text-gray-500 text-lg font-semibold">
+                💰 Smart Income & Expense Tracking
+            </h3>
+
+
+            <!-- Accent Divider -->
+            <div class="mt-4  max-w-6xl  flex justify-center">
+                <span class="h-1 w-full rounded-full bg-cyan-500 shadow-lg"></span>
+            </div>
         </header>
+
 
         <!-- Overview Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
@@ -48,8 +66,7 @@
         </div>
 
         <!-- Main Section -->
-        <main class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
             <!-- Add Income / Expense -->
             <section class="bg-white rounded-xl shadow-md p-5">
                 <h5 class="text-xl font-semibold text-center mb-4">
@@ -57,7 +74,6 @@
                 </h5>
 
                 <form class="space-y-4">
-
                     <!-- Amount -->
                     <div>
                         <label class="block font-semibold text-gray-600">Amount</label>
@@ -92,19 +108,24 @@
                     </div>
 
                     <!-- Submit -->
-                    <button
-                        class="w-full bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 rounded-lg">
+                    <button class="w-full bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 rounded-lg">
                         Add Entry
                     </button>
                 </form>
             </section>
 
             <!-- Placeholder for Chart / History -->
-            <section
-                class="bg-white rounded-xl shadow-md p-5 flex items-center justify-center text-gray-400">
-                Chart / History Section
-            </section>
 
+            <div class="w-full md:w-2/3 lg:w-full mx-auto p-6 bg-white shadow-lg rounded-xl">
+                <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">
+                    Category Overview
+                </h2>
+
+                <div class="h-[300px] sm:h-[350px] md:h-[400px]">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <script src="script.js"></script>
         </main>
     </section>
 </body>
