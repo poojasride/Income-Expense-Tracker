@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Income & Expense Tracker</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Donut Chart -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+
+<body class="bg-blue-100 font-sans">
+
+    <section class="max-w-7xl mx-auto p-6">
+
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800">
+                Income & Expense Tracker
+            </h1>
+            <p class="text-lg text-gray-600 mt-3">
+                Unified overview of income, expenses & balance
+            </p>
+        </header>
+
+       <!-- <div class="grid grid-flow-col grid-rows-3 gap-2"> -->
+
+
+        <!-- Financial Overview -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+
+
+            <!-- Income -->
+            <div class="bg-white rounded-xl shadow-md  p-2  border border-white">
+                <img src="./img/income.svg" alt="Income Icon" class="h-28 mx-auto mb-2">
+                <h5 class="text-xl font-semibold text-gray-700">Total Income</h5>
+                <p class="text-2xl font-bold text-green-600 mt-2">+ $12,000</p>
+            </div>
+
+            <!-- Expense -->
+            <div class="bg-white rounded-xl shadow-md p-2 border border-white">
+                <img src="./img/expense.svg" alt="Expense Icon" class="h-28 mx-auto mb-2">
+                <h5 class="text-xl font-semibold text-gray-700">Total Expense</h5>
+                <p class="text-2xl font-bold text-red-500 mt-2">- $3,000</p>
+            </div>
+
+            <!-- Balance -->
+            <div class="bg-white rounded-xl shadow-md p-2 border border-white">
+                <img src="./img/balance.svg" alt="Balance Icon" class="h-28 mx-auto mb-2">
+                <h5 class="text-xl font-semibold text-gray-700">Net Balance</h5>
+                <p class="text-2xl font-bold text-blue-600 mt-2">$9,000</p>
+            </div>
+
+
+
+
+
+
+        </div>
+
+        <!-- Pie Chart
+        <div id="myPlot"style="width:100%;max-width:700px  class="row-span-3 flex justify-between"></div>
+
+        <script>
+            const xArray = ["Food", "Cloth", "Traval", "Insurance", "Rent"];
+            const yArray = [55, 49, 44, 24, 15];
+
+            const layout = { title: "Category Overview" };
+
+            const data = [{ labels: xArray, values: yArray, hole: .4, type: "pie" }];
+
+            Plotly.newPlot("myPlot", data, layout);
+        </script> -->
+
+    </section>
+
+</body>
+
+</html>
