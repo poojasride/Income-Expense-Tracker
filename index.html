@@ -28,7 +28,7 @@
             </p>
         </header>
 
-       <!-- <div class="grid grid-flow-col grid-rows-3 gap-2"> -->
+
 
 
         <!-- Financial Overview -->
@@ -58,24 +58,26 @@
 
 
 
+            <!-- Pie Chart -->
+            <div id="myPlot" style="width:100%;max-width:700px" class="row-span-3 flex justify-between"></div>
+
+            <script>
+                const xArray = ["Food", "Cloth", "Traval", "Insurance", "Rent"];
+                const yArray = [55, 49, 44, 24, 15];
+
+                const layout = { title: "Category Overview" };
+
+                const data = [{ labels: xArray, values: yArray, hole: .4, type: "pie" }];
+
+                Plotly.newPlot("myPlot", data, layout);
+            </script>
 
 
 
         </div>
 
-        <!-- Pie Chart
-        <div id="myPlot"style="width:100%;max-width:700px  class="row-span-3 flex justify-between"></div>
 
-        <script>
-            const xArray = ["Food", "Cloth", "Traval", "Insurance", "Rent"];
-            const yArray = [55, 49, 44, 24, 15];
 
-            const layout = { title: "Category Overview" };
-
-            const data = [{ labels: xArray, values: yArray, hole: .4, type: "pie" }];
-
-            Plotly.newPlot("myPlot", data, layout);
-        </script> -->
 
     </section>
 
