@@ -17,7 +17,7 @@ const data = {
         "#ef4444", // Bills - red
       ],
       borderWidth: 1,
-      hoverOffset: 4,
+      hoverOffset: 2,
     },
   ],
 };
