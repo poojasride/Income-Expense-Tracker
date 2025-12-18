@@ -17,7 +17,7 @@ const data = {
         "#ef4444", // Bills - red
       ],
       borderWidth: 1,
-       hoverOffset: 4
+      hoverOffset: 4,
     },
   ],
 };
@@ -31,7 +31,7 @@ const config = {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "bottom",
+        position: "right",
         labels: {
           color: "#374151", // gray-700
           font: {
@@ -42,7 +42,15 @@ const config = {
       },
       title: {
         display: true,
-        text: "Income vs Expense",
+        text: "Spending overview",
+        color: "#4d525bff", 
+        font: {
+          size: 16,
+          weight: "600",
+        },
+        padding: {
+          bottom: 10,
+        },
       },
     },
   },
