@@ -1,9 +1,5 @@
 let donutChartInstance = null;
 
-if (donutChartInstance) {
-  donutChartInstance.destroy();
-}
-
 // Donut chart add data and config
 async function donutChart(categoryTotal) {
   const catLabels = Object.keys(categoryTotal);
@@ -75,6 +71,10 @@ async function donutChart(categoryTotal) {
   };
 
   //  Create donut chart
+  if (donutChartInstance) {
+    donutChartInstance.destroy();
+  }
+
   donutChartInstance = new Chart(chart, config);
 }
 
@@ -199,9 +199,16 @@ async function setDataForTable(transaction) {
     deleteBtn.className =
       "px-3 py-1 text-sm border rounded text-red-600 hover:bg-red-50";
 
-    deleteBtn.addEventListener("click", () => {
-      console.log("Delete clicked for ID:", item.id);
-      // deleteTransaction(item.id);
+    deleteBtn.addEventListener("click", async () => {
+      const confirmDelete = confirm(
+        "Are you sure you want to delete this transaction?"
+      );
+
+      if (!confirmDelete) return;
+
+      await deleteTransaction(item.id);
+
+      startFun(); // refresh table + chart
     });
 
     actionTd.append(editBtn, deleteBtn);
@@ -360,6 +367,20 @@ function updateHandler(item) {
   }
 
   document.getElementById("submitEntry").innerText = "Update Entry";
+}
+
+async function deleteTransaction(id) {
+  try {
+    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
+
+    await fetch(url, {
+      method: "DELETE",
+    });
+
+    console.log("Deleted transaction:", id);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function updateTransaction(id, data) {
