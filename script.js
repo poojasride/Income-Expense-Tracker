@@ -130,8 +130,8 @@ async function formattedNumber(amount) {
   return formattedNumber;
 }
 
-function formatDate(timestamp) {
-  return new Date(timestamp * 1000)
+function formatDate(dateValue) {
+  return new Date(dateValue)
     .toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
@@ -139,6 +139,7 @@ function formatDate(timestamp) {
     })
     .replace(/ /g, "-");
 }
+
 
 async function setDataForTable(transaction) {
   const tableBody = document.getElementById("transaction-body");
@@ -250,41 +251,37 @@ expenseButton.addEventListener("click", function () {
   selectedType = "Expense";
 });
 
-// document.getElementById("addTypeExpense").addEventListener("click", () => {});
+document.getElementById("addTypeExpense").addEventListener("click", () => {});
 
 const addEntry = document.getElementById("addEntry");
 
-addEntry.addEventListener("submit", async function (event) {
+addEntry.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const amount = document.getElementById("amount").value.trim();
-  const category = document.getElementById("category").value.trim();
-  const description = document.getElementById("description").value.trim();
-
-  // ✅ validation
-  if (!amount || !category || !description) {
-    alert("Please fill all fields");
-    return;
-  }
+  const amount = document.getElementById("amount").value;
+  const category = document.getElementById("category").value;
+  const description = document.getElementById("description").value;
 
   const data = {
-    amount: Number(amount),
-    category,
-    description,
-    type: selectedType,
-    date: new Date().toISOString(),
+    amount: Number(amount), // convert to number
+    category: category,
+    description: description,
+    type: selectedType, // Income or Expense
+    date: new Date().toISOString(), // better format
   };
 
   console.log("Sending:", data);
 
-  await addTransaction(data);
-
-  resetData(); // clear inputs after submit
+  addTransaction(data);
 });
 
 const resetBtn = document.getElementById("reset");
 
 resetBtn.addEventListener("click", resetData);
+
+const resetAddEntry = document.getElementById("resetEntry");
+
+resetAddEntry.addEventListener("click", resetData);
 
 function resetData() {
   document.getElementById("amount").value = "";
