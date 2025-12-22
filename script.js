@@ -140,7 +140,6 @@ function formatDate(dateValue) {
     .replace(/ /g, "-");
 }
 
-
 async function setDataForTable(transaction) {
   const tableBody = document.getElementById("transaction-body");
 
@@ -184,7 +183,8 @@ async function setDataForTable(transaction) {
 
     editBtn.addEventListener("click", () => {
       console.log("Edit clicked for ID:", item.id);
-      // openEditModal(item);
+      // update handler function
+      updateHandler(item);
     });
 
     // Delete button
@@ -255,33 +255,44 @@ document.getElementById("addTypeExpense").addEventListener("click", () => {});
 
 const addEntry = document.getElementById("addEntry");
 
-addEntry.addEventListener("submit", function (event) {
+addEntry.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  const amount = document.getElementById("amount").value;
-  const category = document.getElementById("category").value;
-  const description = document.getElementById("description").value;
+  const amount = document.getElementById("amount").value.trim();
+  const category = document.getElementById("category").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  if (!amount || !category || !description) {
+    alert("Please fill all fields");
+    return;
+  }
 
   const data = {
-    amount: Number(amount), // convert to number
-    category: category,
-    description: description,
-    type: selectedType, // Income or Expense
-    date: new Date().toISOString(), // better format
+    amount: Number(amount),
+    category,
+    description,
+    type: selectedType,
+    date: new Date().toISOString(),
   };
 
-  console.log("Sending:", data);
+  if (editMode) {
+    await updateTransaction(editTransactionId, data);
+    editMode = false;
+    editTransactionId = null;
+  } else {
+    await addTransaction(data);
+  }
 
-  addTransaction(data);
+  resetData();
+  startFun(); // refresh table + chart
 });
 
 const resetBtn = document.getElementById("reset");
 
 resetBtn.addEventListener("click", resetData);
 
-const resetAddEntry = document.getElementById("resetEntry");
-
-resetAddEntry.addEventListener("click", resetData);
+let editMode = false;
+let editTransactionId = null;
 
 function resetData() {
   document.getElementById("amount").value = "";
@@ -293,6 +304,14 @@ function resetData() {
 
   expenseButton.style.backgroundColor = "#E5E7EB";
   expenseButton.style.color = "black";
+
+  //This for date when updating
+  incomeBtn.click();
+
+  document.getElementById("submitEntry").innerText = "Add Entry";
+
+  editMode = false;
+  editTransactionId = null;
 }
 
 async function startFun() {
@@ -318,6 +337,42 @@ async function startFun() {
   setDataForTable(transactions);
 
   console.log(categoryTotal);
+}
+
+function updateHandler(item) {
+  editMode = true;
+  editTransactionId = item.id;
+
+  document.getElementById("amount").value = item.amount;
+  document.getElementById("category").value = item.category;
+  document.getElementById("description").value = item.description;
+
+  if (item.type === "Income") {
+    incomeBtn.click();
+  } else {
+    expenseButton.click();
+  }
+
+  document.getElementById("submitEntry").innerText = "Update Entry";
+}
+
+async function updateTransaction(id, data) {
+  try {
+    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+    console.log("Updated:", result);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 startFun();
