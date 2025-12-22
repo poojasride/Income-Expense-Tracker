@@ -1,3 +1,9 @@
+let donutChartInstance = null;
+
+if (donutChartInstance) {
+  donutChartInstance.destroy();
+}
+
 // Donut chart add data and config
 async function donutChart(categoryTotal) {
   const catLabels = Object.keys(categoryTotal);
@@ -68,8 +74,8 @@ async function donutChart(categoryTotal) {
     },
   };
 
-  // ✅ Create chart
-  new Chart(chart, config);
+  //  Create donut chart
+  donutChartInstance = new Chart(chart, config);
 }
 
 //Get Transactions
