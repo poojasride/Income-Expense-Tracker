@@ -1,4 +1,6 @@
 let donutChartInstance = null;
+let transactions = [];
+
 
 // Donut chart add data and config
 async function donutChart(categoryTotal) {
@@ -328,7 +330,7 @@ function resetData() {
 }
 
 async function startFun() {
-  const transactions = await getTransactions();
+   transactions = await getTransactions();
   console.log(`transactions : ${transactions}`);
 
   const categoryTotal = transactions.reduce((acc, item) => {
@@ -401,5 +403,30 @@ async function updateTransaction(id, data) {
     console.error(error);
   }
 }
+
+
+const searchInput = document.getElementById("searchCategory");
+
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.trim().toLowerCase();
+  filterByCategory(keyword);
+});
+
+function filterByCategory(keyword) {
+  if (!keyword) {
+    // empty input → show all
+    setDataForTable(transactions);
+    donutChart(calculateCategoryTotals(transactions));
+    return;
+  }
+
+  const filtered = transactions.filter((item) =>
+    item.category.toLowerCase().includes(keyword)
+  );
+
+  setDataForTable(filtered);
+  donutChart(calculateCategoryTotals(filtered));
+}
+
 
 startFun();
