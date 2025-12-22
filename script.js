@@ -1,35 +1,31 @@
-let donutChartInstance = null;
-let transactions = [];
+let donutChartInstance = null; // Chart.js instance
+let transactions = []; // Store all transactions
+let editMode = false; // Edit mode
+let editTransactionId = null; // Id of edited data
+let selectedType = "Income"; // Default type for new transactions
 
-
-// Donut chart add data and config
+// Create or update the donut chart
 async function donutChart(categoryTotal) {
   const catLabels = Object.keys(categoryTotal);
   const catValues = Object.values(categoryTotal);
 
+  // Generate random RGB color for each category
   function dynamicColors() {
-    var r = Math.floor(Math.random() * 255);
-    var g = Math.floor(Math.random() * 255);
-    var b = Math.floor(Math.random() * 255);
-    return "rgb(" + r + "," + g + "," + b + ")";
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    return `rgb(${r},${g},${b})`;
   }
 
-  // Array to store dynamic colors
-  const backgroundColors = [];
-
-  // Loop through your data points and assign a random color for each
-  for (let i = 0; i < catLabels.length; i++) {
-    backgroundColors.push(dynamicColors()); // Use the RGB function defined above
-  }
+  const backgroundColors = catLabels.map(() => dynamicColors());
 
   const chart = document.getElementById("myChart");
 
-  // ✅ Category-wise data
   const data = {
     labels: catLabels,
     datasets: [
       {
-        label: "amount", // this label for hover on chart
+        label: "amount", // Hover label
         data: catValues,
         backgroundColor: backgroundColors,
         borderWidth: 1,
@@ -38,7 +34,6 @@ async function donutChart(categoryTotal) {
     ],
   };
 
-  // // ✅ Config AFTER data
   const config = {
     type: "doughnut",
     data: data,
@@ -49,30 +44,21 @@ async function donutChart(categoryTotal) {
         legend: {
           position: "bottom",
           labels: {
-            color: "#374151", // gray-700
-            font: {
-              size: 14,
-              weight: "600",
-            },
+            color: "#374151",
+            font: { size: 14, weight: "600" },
           },
         },
         title: {
           display: true,
-          text: "Income & Expence Spending Overview",
+          text: "Income & Expense Spending Overview",
           color: "#4d525bff",
-          font: {
-            size: 16,
-            weight: "600",
-          },
-          padding: {
-            bottom: 10,
-          },
+          font: { size: 16, weight: "600" },
+          padding: { bottom: 10 },
         },
       },
     },
   };
 
-  //  Create donut chart
   if (donutChartInstance) {
     donutChartInstance.destroy();
   }
@@ -80,64 +66,72 @@ async function donutChart(categoryTotal) {
   donutChartInstance = new Chart(chart, config);
 }
 
-//Get Transactions
+// Helper to calculate category totals for chart
+function calculateCategoryTotals(transactionArray) {
+  return transactionArray.reduce((acc, item) => {
+    const category = item.category.trim();
+    const amount = Number(item.amount);
+
+    if (!acc[category]) acc[category] = 0;
+    acc[category] += amount;
+    return acc;
+  }, {});
+}
+
+// Fetch all transactions from API
 async function getTransactions() {
   const url = "https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry";
   try {
     const response = await fetch(url);
+    if (!response) throw new Error(`Response: ${response.status}`);
 
-    if (!response) throw new Error(`Response : ${response.status} `);
+    const transactionsData = await response.json();
 
-    const transactions = await response.json();
+    const totalIncome = await calculateIncome(transactionsData);
+    const formattedIncome = await formattedNumber(totalIncome);
 
-    // Sum income and formatted  $0,000 USD currency formated
-    let totalIncome = await calculateIncome(transactions);
-    let formattedIncome = await formattedNumber(totalIncome);
+    const totalExpense = await calculateExpense(transactionsData);
+    const formattedExpense = await formattedNumber(totalExpense);
 
-    //Sum of expense and formatted  $0,000 USD currency formated
-    let totalExpense = await calculateExpense(transactions);
-    let formattedExpense = await formattedNumber(totalExpense);
+    const balance = totalIncome - totalExpense;
+    const formattedBalance = await formattedNumber(balance);
 
-    //sum of balance and formatted  $0,000 USD currency formated
-    let balance = totalIncome - totalExpense;
-    let formattedBal = await formattedNumber(balance);
-
-    // Handled Overview Cards  Income  &Expense &Balance
+    // Update overview cards
     document.getElementById("income").innerHTML = `+ ${formattedIncome}`;
     document.getElementById("expense").innerHTML = `- ${formattedExpense}`;
-    document.getElementById("balance").innerHTML = `- ${formattedBal}`;
+    document.getElementById("balance").innerHTML = `- ${formattedBalance}`;
 
-    return transactions;
+    return transactionsData;
   } catch (error) {
     console.error(error);
   }
 }
 
+// Calculate total income
 async function calculateIncome(transactions) {
   return transactions
-    .filter((transaction) => transaction.type === "Income")
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
+    .filter((t) => t.type === "Income")
+    .reduce((sum, t) => sum + t.amount, 0);
 }
 
+// Calculate total expense
 async function calculateExpense(transactions) {
   return transactions
-    .filter((transaction) => transaction.type === "Expense")
-
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
+    .filter((t) => t.type === "Expense")
+    .reduce((sum, t) => sum + t.amount, 0);
 }
 
+// Format number as USD currency
 async function formattedNumber(amount) {
-  // Format for US Dollar currency
-  const formattedNumber = new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: 0, // Set to 0 avoid decimal
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
-
-  return formattedNumber;
 }
 
+// Format date as DD-MMM-YYYY
 function formatDate(dateValue) {
   return new Date(dateValue)
     .toLocaleDateString("en-GB", {
@@ -148,12 +142,12 @@ function formatDate(dateValue) {
     .replace(/ /g, "-");
 }
 
-async function setDataForTable(transaction) {
+// This is transaction table
+async function setDataForTable(transactionArray) {
   const tableBody = document.getElementById("transaction-body");
-
   tableBody.innerHTML = "";
 
-  transaction.forEach((item) => {
+  transactionArray.forEach((item) => {
     const row = document.createElement("tr");
     row.className = "hover:bg-cyan-50 transition";
 
@@ -179,185 +173,152 @@ async function setDataForTable(transaction) {
     dateTd.className = "px-6 py-3";
     dateTd.textContent = formatDate(item.date);
 
-    // ✅ ACTION BUTTONS TD
     const actionTd = document.createElement("td");
     actionTd.className = "px-3 py-1 text-center space-x-2";
 
-    // Edit button
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.className =
       "px-3 py-1 text-sm border rounded text-blue-600 hover:bg-blue-50";
+    editBtn.addEventListener("click", () => updateHandler(item));
 
-    editBtn.addEventListener("click", () => {
-      console.log("Edit clicked for ID:", item.id);
-      // update handler function
-      updateHandler(item);
-    });
-
-    // Delete button
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.className =
       "px-3 py-1 text-sm border rounded text-red-600 hover:bg-red-50";
-
     deleteBtn.addEventListener("click", async () => {
       const confirmDelete = confirm(
         "Are you sure you want to delete this transaction?"
       );
-
       if (!confirmDelete) return;
-
       await deleteTransaction(item.id);
-
-      startFun(); // refresh table + chart
+      startFun();
     });
 
     actionTd.append(editBtn, deleteBtn);
-
     row.append(descTd, amountTd, categoryTd, typeTd, dateTd, actionTd);
     tableBody.appendChild(row);
   });
 }
 
-//Add transaction  entry
+// Add transaction
 async function addTransaction(data) {
   try {
     const url = "https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry";
-
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    const result = await response.json();
-    console.log(result);
+    console.log(await response.json());
   } catch (error) {
     console.error(error);
   }
 }
 
-// Handle the data for create transaction
+// Update transaction
+async function updateTransaction(id, data) {
+  try {
+    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    console.log("Updated:", await response.json());
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-let selectedType = "Income"; // default
+// Delete transaction
+async function deleteTransaction(id) {
+  try {
+    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
+    await fetch(url, { method: "DELETE" });
+    console.log("Deleted transaction:", id);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
+// Handle Income / Expense type selection
 const incomeBtn = document.getElementById("addTypeIncome");
 const expenseButton = document.getElementById("addTypeExpense");
 
 incomeBtn.addEventListener("click", () => {
   selectedType = "Income";
-
   incomeBtn.style.backgroundColor = "#22D3EE";
   incomeBtn.style.color = "white";
-
   expenseButton.style.backgroundColor = "#E5E7EB";
   expenseButton.style.color = "black";
+
+
 });
 
-expenseButton.addEventListener("click", function () {
+expenseButton.addEventListener("click", () => {
+  selectedType = "Expense";
   expenseButton.style.backgroundColor = "#22D3EE";
   expenseButton.style.color = "white";
-
   incomeBtn.style.backgroundColor = "#E5E7EB";
   incomeBtn.style.color = "black";
 
-  selectedType = "Expense";
+  
 });
 
-document.getElementById("addTypeExpense").addEventListener("click", () => {});
+// Submit form handler
+document
+  .getElementById("addEntry")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-const addEntry = document.getElementById("addEntry");
+    const amount = document.getElementById("amount").value.trim();
+    const category = document.getElementById("category").value.trim();
+    const description = document.getElementById("description").value.trim();
 
-addEntry.addEventListener("submit", async function (event) {
-  event.preventDefault();
+    if (!amount || !category) {
+      alert("Please fill all fields");
+      return;
+    }
 
-  const amount = document.getElementById("amount").value.trim();
-  const category = document.getElementById("category").value.trim();
-  const description = document.getElementById("description").value.trim();
+    const data = {
+      amount: Number(amount),
+      category,
+      description,
+      type: selectedType,
+      date: new Date().toISOString(),
+    };
 
-  if (!amount || !category || !description) {
-    alert("Please fill all fields");
-    return;
-  }
+    if (editMode) {
+      await updateTransaction(editTransactionId, data);
+      editMode = false;
+      editTransactionId = null;
+    } else {
+      await addTransaction(data);
+    }
 
-  const data = {
-    amount: Number(amount),
-    category,
-    description,
-    type: selectedType,
-    date: new Date().toISOString(),
-  };
+    resetData();
+    startFun();
+  });
 
-  if (editMode) {
-    await updateTransaction(editTransactionId, data);
-    editMode = false;
-    editTransactionId = null;
-  } else {
-    await addTransaction(data);
-  }
-
-  resetData();
-  startFun(); // refresh table + chart
-});
-
+// Reset form fields
 const resetBtn = document.getElementById("reset");
-
 resetBtn.addEventListener("click", resetData);
-
-let editMode = false;
-let editTransactionId = null;
 
 function resetData() {
   document.getElementById("amount").value = "";
   document.getElementById("category").value = "";
   document.getElementById("description").value = "";
-
-  incomeBtn.style.backgroundColor = "#22D3EE";
-  incomeBtn.style.color = "white";
-
-  expenseButton.style.backgroundColor = "#E5E7EB";
-  expenseButton.style.color = "black";
-
-  //This for date when updating
   incomeBtn.click();
-
   document.getElementById("submitEntry").innerText = "Add Entry";
-
   editMode = false;
   editTransactionId = null;
 }
 
-async function startFun() {
-   transactions = await getTransactions();
-  console.log(`transactions : ${transactions}`);
-
-  const categoryTotal = transactions.reduce((acc, item) => {
-    const category = item.category.trim();
-    const amount = Number(item.amount);
-
-    if (!acc[category]) {
-      acc[category] = 0;
-    }
-
-    acc[category] += amount;
-    return acc;
-  }, {});
-
-  //This fun handle donut chart data and colors
-  donutChart(categoryTotal);
-
-  // This fun handle transaction history
-  setDataForTable(transactions);
-
-  console.log(categoryTotal);
-}
-
+// Handle edit action
 function updateHandler(item) {
   editMode = true;
   editTransactionId = item.id;
-
   document.getElementById("amount").value = item.amount;
   document.getElementById("category").value = item.category;
   document.getElementById("description").value = item.description;
@@ -371,40 +332,49 @@ function updateHandler(item) {
   document.getElementById("submitEntry").innerText = "Update Entry";
 }
 
-async function deleteTransaction(id) {
-  try {
-    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
+const incomeFilterBtn = document.getElementById("filterIncome");
+const expenseFilterBtn = document.getElementById("filterExpense");
 
-    await fetch(url, {
-      method: "DELETE",
-    });
+// Show only Income transactions
+incomeFilterBtn.addEventListener("click", () => {
+  const filtered = transactions.filter(item => item.type === "Income");
+  setDataForTable(filtered);
+  donutChart(calculateCategoryTotals(filtered));
 
-    console.log("Deleted transaction:", id);
-  } catch (error) {
-    console.error(error);
-  }
+  incomeFilterBtn.style.backgroundColor = "#22D3EE";
+  incomeFilterBtn.style.color = "white";
+  expenseFilterBtn.style.backgroundColor = "#E5E7EB";
+  expenseFilterBtn.style.color = "black";
+});
+
+// Show only Expense transactions
+expenseFilterBtn.addEventListener("click", () => {
+  const filtered = transactions.filter(item => item.type === "Expense");
+  setDataForTable(filtered);
+  donutChart(calculateCategoryTotals(filtered));
+
+  expenseFilterBtn.style.backgroundColor = "#22D3EE";
+  expenseFilterBtn.style.color = "white";
+  incomeFilterBtn.style.backgroundColor = "#E5E7EB";
+  incomeFilterBtn.style.color = "black";
+});
+
+//  Show all (reset filter)
+const showAllBtn = document.getElementById("filterAll");
+if (showAllBtn) {
+  showAllBtn.addEventListener("click", () => {
+    setDataForTable(transactions);
+    donutChart(calculateCategoryTotals(transactions));
+
+    incomeFilterBtn.style.backgroundColor = "#E5E7EB";
+    incomeFilterBtn.style.color = "black";
+    expenseFilterBtn.style.backgroundColor = "#E5E7EB";
+    expenseFilterBtn.style.color = "black";
+  });
 }
 
-async function updateTransaction(id, data) {
-  try {
-    const url = `https://6944a75e7dd335f4c360d98f.mockapi.io/transaction-entry/${id}`;
 
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    const result = await response.json();
-    console.log("Updated:", result);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-
+// Search transactions by category
 const searchInput = document.getElementById("searchCategory");
 
 searchInput.addEventListener("input", () => {
@@ -414,19 +384,31 @@ searchInput.addEventListener("input", () => {
 
 function filterByCategory(keyword) {
   if (!keyword) {
-    // empty input → show all
     setDataForTable(transactions);
     donutChart(calculateCategoryTotals(transactions));
     return;
   }
 
-  const filtered = transactions.filter((item) =>
-    item.category.toLowerCase().includes(keyword)
+  const filtered = transactions.filter(
+    (item) =>
+      item.category.toLowerCase().includes(keyword) ||
+      item.description.toLowerCase().includes(keyword)
   );
 
   setDataForTable(filtered);
   donutChart(calculateCategoryTotals(filtered));
 }
 
+// Start Function
+async function startFun() {
+  transactions = await getTransactions();
+  const categoryTotal = calculateCategoryTotals(transactions);
+
+  donutChart(categoryTotal);
+  setDataForTable(transactions);
+
+  console.log("Transactions:", transactions);
+  console.log("Category totals:", categoryTotal);
+}
 
 startFun();
