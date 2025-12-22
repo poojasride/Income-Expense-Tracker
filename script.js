@@ -250,37 +250,41 @@ expenseButton.addEventListener("click", function () {
   selectedType = "Expense";
 });
 
-document.getElementById("addTypeExpense").addEventListener("click", () => {});
+// document.getElementById("addTypeExpense").addEventListener("click", () => {});
 
 const addEntry = document.getElementById("addEntry");
 
-addEntry.addEventListener("submit", function (event) {
+addEntry.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  const amount = document.getElementById("amount").value;
-  const category = document.getElementById("category").value;
-  const description = document.getElementById("description").value;
+  const amount = document.getElementById("amount").value.trim();
+  const category = document.getElementById("category").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  // ✅ validation
+  if (!amount || !category || !description) {
+    alert("Please fill all fields");
+    return;
+  }
 
   const data = {
-    amount: Number(amount), // convert to number
-    category: category,
-    description: description,
-    type: selectedType, // Income or Expense
-    date: new Date().toISOString(), // better format
+    amount: Number(amount),
+    category,
+    description,
+    type: selectedType,
+    date: new Date().toISOString(),
   };
 
   console.log("Sending:", data);
 
-  addTransaction(data);
+  await addTransaction(data);
+
+  resetData(); // clear inputs after submit
 });
 
 const resetBtn = document.getElementById("reset");
 
 resetBtn.addEventListener("click", resetData);
-
-const resetAddEntry = document.getElementById("resetEntry");
-
-resetAddEntry.addEventListener("click", resetData);
 
 function resetData() {
   document.getElementById("amount").value = "";
