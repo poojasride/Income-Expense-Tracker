@@ -27,51 +27,63 @@ async function donutChart(categoryTotal) {
 
   const backgroundColors = catLabels.map(() => dynamicColors());
 
+  const loader = document.getElementById("chartLoader");
+  const chartWrapper = document.getElementById("chartWrapper");
+  const noChartData = document.getElementById("chartEmptyText");
   const chart = document.getElementById("myChart");
 
-  const data = {
-    labels: catLabels,
-    datasets: [
-      {
-        label: "amount", // Hover label
-        data: catValues,
-        backgroundColor: backgroundColors,
-        borderWidth: 1,
-        hoverOffset: 2,
-      },
-    ],
-  };
+  //  Show loader first
+  loader.classList.remove("hidden");
+  chartWrapper.classList.add("hidden");
+  noChartData.classList.add("hidden");
 
-  const config = {
-    type: "doughnut",
-    data: data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: "#374151",
-            font: { size: 14, weight: "600" },
+  setTimeout(() => {
+    const data = {
+      labels: catLabels,
+      datasets: [
+        {
+          label: "amount", // Hover label
+          data: catValues,
+          backgroundColor: backgroundColors,
+          borderWidth: 1,
+          hoverOffset: 2,
+        },
+      ],
+    };
+
+    const config = {
+      type: "doughnut",
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "#374151",
+              font: { size: 14, weight: "600" },
+            },
+          },
+          title: {
+            display: true,
+            text: "Income & Expense Spending Overview",
+            color: "#4d525bff",
+            font: { size: 16, weight: "600" },
+            padding: { bottom: 10 },
           },
         },
-        title: {
-          display: true,
-          text: "Income & Expense Spending Overview",
-          color: "#4d525bff",
-          font: { size: 16, weight: "600" },
-          padding: { bottom: 10 },
-        },
       },
-    },
-  };
+    };
 
-  if (donutChartInstance) {
-    donutChartInstance.destroy();
-  }
+    if (donutChartInstance) {
+      donutChartInstance.destroy();
+    }
 
-  donutChartInstance = new Chart(chart, config);
+    donutChartInstance = new Chart(chart, config);
+    loader.classList.add("hidden");
+    chartWrapper.classList.remove("hidden");
+  }, 500);
 }
 
 // Helper to calculate category totals for chart

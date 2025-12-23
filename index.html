@@ -124,18 +124,33 @@
 
             <!--  Chart / History -->
 
-            <div class="w-full  lg:w-full mx-auto p-6 bg-white shadow-lg rounded-xl">
+            <div class="w-full lg:w-full mx-auto p-6 bg-white shadow-lg rounded-xl">
                 <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">
                     Category Overview
                 </h2>
 
+                <!-- Empty record -->
                 <p id="chartEmptyText" class="text-center text-gray-600 mt-2 hidden">
                     No chart data available
                 </p>
-                <div class="h-[300px] sm:h-[350px] md:h-[400px]">
+
+                <!--Loader animation (hidden by default) -->
+                <div id="chartLoader" class="flex justify-center items-center h-[300px] hidden" role="status">
+                    <svg aria-hidden="true" class="w-8 h-8 animate-spin text-gray-300 fill-cyan-900"
+                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908Z"
+                            fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539" fill="currentFill" />
+                    </svg>
+                </div>
+
+                <!-- Chart -->
+                <div id="chartWrapper" class="h-[300px] sm:h-[350px] md:h-[400px] hidden">
                     <canvas id="myChart"></canvas>
                 </div>
             </div>
+
             <script type="module" src="script.js"></script>
         </main>
 
