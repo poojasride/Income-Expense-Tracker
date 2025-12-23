@@ -83,7 +83,7 @@ async function donutChart(categoryTotal) {
     donutChartInstance = new Chart(chart, config);
     loader.classList.add("hidden");
     chartWrapper.classList.remove("hidden");
-  }, 500);
+  }, 200);
 }
 
 // Helper to calculate category totals for chart
