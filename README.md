@@ -36,4 +36,11 @@ It allows users to add, edit, delete, filter, and visualize transactions with a 
 4. Donut chart updates dynamically based on category totals
 5. Filters & search update table and chart in real-time
 
+## ▶️ How to Run the Project
+
+1. Clone or download the project
+2. Open `index.html` in a browser
+3. Make sure you are connected to the internet (for MockAPI)
+
+
 
