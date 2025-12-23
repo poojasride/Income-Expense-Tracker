@@ -9,6 +9,14 @@ async function donutChart(categoryTotal) {
   const catLabels = Object.keys(categoryTotal);
   const catValues = Object.values(categoryTotal);
 
+  const chartText = document.getElementById("chartEmptyText");
+
+  if (Object.keys(categoryTotal).length === 0) {
+    chartText.classList.remove("hidden");
+    return;
+  }
+  chartText.classList.add("hidden");
+
   // Generate random RGB color for each category
   function dynamicColors() {
     const r = Math.floor(Math.random() * 255);
@@ -147,6 +155,20 @@ async function setDataForTable(transactionArray) {
   const tableBody = document.getElementById("transaction-body");
   tableBody.innerHTML = "";
 
+  //  Handle 0 records
+  if (!transactionArray || transactionArray.length === 0) {
+    const row = document.createElement("tr");
+
+    const td = document.createElement("td");
+    td.colSpan = 6; // number of table columns
+    td.className = "text-center py-6 text-gray-500 font-medium";
+    td.textContent = "No records found";
+
+    row.appendChild(td);
+    tableBody.appendChild(row);
+    return;
+  }
+
   transactionArray.forEach((item) => {
     const row = document.createElement("tr");
     row.className = "hover:bg-cyan-50 transition";
@@ -267,7 +289,6 @@ document
   .getElementById("addEntry")
   .addEventListener("submit", async (event) => {
     event.preventDefault(); // Browser default action → Reload page && Browser stops the default action
-
 
     // trim() removes unwanted spaces from the beginning and end of a string.
     const amount = document.getElementById("amount").value.trim();

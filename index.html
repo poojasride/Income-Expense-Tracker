@@ -109,12 +109,11 @@
 
                     <!-- Submit -->
                     <div class="flex flex-col sm:flex-row items-center justify-left gap-2 mt-1">
-                        <button type="button" id="reset" 
-                        
+                        <button type="button" id="reset"
                             class="w-full sm:w-auto bg-red-400 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg cursor-pointer">
                             Reset
                         </button>
-                        <button type="submit" id="submitEntry" 
+                        <button type="submit" id="submitEntry"
                             class="w-full bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 rounded-lg cursor-pointer">
                             Add Entry
                         </button>
@@ -130,6 +129,9 @@
                     Category Overview
                 </h2>
 
+                <p id="chartEmptyText" class="text-center text-gray-600 mt-2 hidden">
+                    No chart data available
+                </p>
                 <div class="h-[300px] sm:h-[350px] md:h-[400px]">
                     <canvas id="myChart"></canvas>
                 </div>
