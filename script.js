@@ -242,7 +242,7 @@ async function deleteTransaction(id) {
   }
 }
 
-// Handle Income / Expense type selection
+// Handle Income / Expense type selection for ui change button colors
 const incomeBtn = document.getElementById("addTypeIncome");
 const expenseButton = document.getElementById("addTypeExpense");
 
@@ -252,8 +252,6 @@ incomeBtn.addEventListener("click", () => {
   incomeBtn.style.color = "white";
   expenseButton.style.backgroundColor = "#E5E7EB";
   expenseButton.style.color = "black";
-
-
 });
 
 expenseButton.addEventListener("click", () => {
@@ -262,16 +260,16 @@ expenseButton.addEventListener("click", () => {
   expenseButton.style.color = "white";
   incomeBtn.style.backgroundColor = "#E5E7EB";
   incomeBtn.style.color = "black";
-
-  
 });
 
 // Submit form handler
 document
   .getElementById("addEntry")
   .addEventListener("submit", async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Browser default action → Reload page && Browser stops the default action
 
+
+    // trim() removes unwanted spaces from the beginning and end of a string.
     const amount = document.getElementById("amount").value.trim();
     const category = document.getElementById("category").value.trim();
     const description = document.getElementById("description").value.trim();
@@ -301,7 +299,7 @@ document
     startFun();
   });
 
-// Reset form fields
+// Reset form fields using reset button
 const resetBtn = document.getElementById("reset");
 resetBtn.addEventListener("click", resetData);
 
@@ -337,7 +335,7 @@ const expenseFilterBtn = document.getElementById("filterExpense");
 
 // Show only Income transactions
 incomeFilterBtn.addEventListener("click", () => {
-  const filtered = transactions.filter(item => item.type === "Income");
+  const filtered = transactions.filter((item) => item.type === "Income");
   setDataForTable(filtered);
   donutChart(calculateCategoryTotals(filtered));
 
@@ -349,7 +347,7 @@ incomeFilterBtn.addEventListener("click", () => {
 
 // Show only Expense transactions
 expenseFilterBtn.addEventListener("click", () => {
-  const filtered = transactions.filter(item => item.type === "Expense");
+  const filtered = transactions.filter((item) => item.type === "Expense");
   setDataForTable(filtered);
   donutChart(calculateCategoryTotals(filtered));
 
@@ -373,16 +371,15 @@ if (showAllBtn) {
   });
 }
 
-
-// Search transactions by category
-const searchInput = document.getElementById("searchCategory");
+// Search transactions by category or description
+const searchInput = document.getElementById("searchCategoryOrDes");
 
 searchInput.addEventListener("input", () => {
   const keyword = searchInput.value.trim().toLowerCase();
-  filterByCategory(keyword);
+  filterBySearchInput(keyword);
 });
 
-function filterByCategory(keyword) {
+function filterBySearchInput(keyword) {
   if (!keyword) {
     setDataForTable(transactions);
     donutChart(calculateCategoryTotals(transactions));
