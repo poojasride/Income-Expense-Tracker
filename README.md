@@ -42,5 +42,8 @@ It allows users to add, edit, delete, filter, and visualize transactions with a 
 2. Open `index.html` in a browser
 3. Make sure you are connected to the internet (for MockAPI)
 
+> Note: I have already added 8 sample records for UI interaction and testing.
+
+
 
 
