@@ -29,13 +29,11 @@ async function donutChart(categoryTotal) {
 
   const loader = document.getElementById("chartLoader");
   const chartWrapper = document.getElementById("chartWrapper");
-  const noChartData = document.getElementById("chartEmptyText");
   const chart = document.getElementById("myChart");
 
   //  Show loader first
   loader.classList.remove("hidden");
   chartWrapper.classList.add("hidden");
-  noChartData.classList.add("hidden");
 
   setTimeout(() => {
     const data = {
@@ -81,6 +79,7 @@ async function donutChart(categoryTotal) {
     }
 
     donutChartInstance = new Chart(chart, config);
+    
     loader.classList.add("hidden");
     chartWrapper.classList.remove("hidden");
   }, 200);
